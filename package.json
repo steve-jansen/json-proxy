@@ -1,0 +1,25 @@
+﻿{
+  "name": "json-proxy",
+  "description": "A static file web server for UI developers that proxies JSON API calls to one or more remote web servers.",
+  "author": "steve-jansen",
+  "version": "0.0.1",
+  "keywords": [ "utility", "proxy" ],
+  "homepage": "https://github.com/steve-jansen/json-proxy",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/steve-jansen/json-proxy.git"
+  },
+  "bugs": { 
+    "url": "https://github.com/steve-jansen/json-proxy/issues",
+    "email":  "stevejansen_github@icloud.com"
+  },
+  "bin": "./server.js",
+  "dependencies": {
+    "node-static": ">= 0.6.7",
+    "http-proxy": ">= 0.8.7",
+    "colors": ">=0.6.0",
+    "util": ">= 0.4.9",
+    "optimist": ">=0.3.5"
+  },
+  "engine": "node >= 0.8.x"
+}

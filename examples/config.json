@@ -1,0 +1,11 @@
+{
+  "port": 8080,
+  "webroot": "/tmp",
+  "forward": {
+    "/api": "example.com:80",
+    "/login": "example.com:80"
+  },
+  "headers": {
+    "iv-user": "john.doe@example.com"
+  }
+}

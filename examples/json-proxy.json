@@ -1,0 +1,7 @@
+{
+  "port": 4040,
+  "webroot": "/dev/null",
+  "forward": {
+    "/api": "www.example.com:80"
+  }
+}
