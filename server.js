@@ -200,8 +200,11 @@ function config() {
 }
 
 function printConfig() {
+  var pkg = require('./package.json');
+
   // display the config as parsed
   util.puts(banner.rainbow.bold);
+  info('about', 'version ' + pkg.version);
   info('proxy', 'listening on port ' + config.port);
   if (null != config.gateway) {
     info('proxy', 'routing forward rules via gateway ' + config.gateway.host + ':' + config.gateway.port);
