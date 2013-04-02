@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env node
 /*
-  json-proxy.js: A static file web server for UI developers that proxies JSON API
-                 calls to one or more remote web servers
+  json-proxy: A static file web server for UI developers that proxies JSON API
+              calls to one or more remote web servers without requiring CORS or JSONP
 
   Copyright (c) 2013 Steve Jansen
 
@@ -47,23 +47,23 @@ const usage = [
   'calls to one or more remote web servers',
   '',
   '',
-  'Usage: node json-proxy.js -p [port] -f [proxy forwarding rule] [directory]',
+  'Usage: node server.js -p [port] -f [proxy forwarding rule] [directory]',
   '',
   '* multiple -f options are allowed',
   '* [directory] defaults to the current working directory',
   '',
   '',
-  'Example: node json-proxy.js -p 8080 -f /api=server:8080',
+  'Example: node server.js -p 8080 -f /api=server:8080',
   '',
   'This example will listen on http://localhost:8080, serving static files in',
   'the current working directory and forwarding /api/* requests to an API server',
   'on http://server:8080/api/*',
   '',
-   'Example: node json-proxy.js -c /tmp/config.json',
+   'Example: node server.js -c /tmp/config.json',
   '',
   'This example uses a config file at /tmp/config.json for options',
   '',
-  'Example: node json-proxy.js',
+  'Example: node server.js',
   '',
   'This example will attempt to load the config file at ./json-proxy.json'
  ].join('\n');
@@ -74,11 +74,13 @@ var static = require('node-static'),
     path = require('path'),
     http = require('http'),
     proxy = require('http-proxy'),
+    url = require('url'),
     fs = require('fs');
 
 
 // read the config file and/or commmand line parameters
 var config = config();
+printConfig();
 
 // proxy server setup
 var server = new proxy.RoutingProxy()
@@ -95,14 +97,6 @@ var file = new(static.Server)(config.webroot);
 // start the server
 http.createServer(handleRequest).listen(config.port);
 
-// display the config as parsed
-util.puts(banner.rainbow.bold);
-info('proxy', 'listening on port ' + (config.port));
-config.forward.forEach(function(rule) {
-  info('proxy', 'forwarding ' + rule.regexp.source + ' --> ' + rule.target.host + ':' + rule.target.port);
-});
-info('serve', 'hosting local files from ' + config.webroot);
-
 // called on every request
 // decides if the request should be handled locally or forwarded to a remote server
 // based on the forwarding ruleset
@@ -112,9 +106,8 @@ function handleRequest(req, res) {
   // test if the requested url is a proxy rule match
   config.forward.forEach(function(rule) {
     if (!match && rule.regexp.test(req.url)) {
-      info('proxy', req.method + ' ' + req.url + ' --> ' + rule.target.host + ':' + rule.target.port);
-      writeProxyHeaders(req);
-      server.proxyRequest(req, res, { host: rule.target.host, port: rule.target.port});
+      
+      proxyRequest(req, res, rule)
       match = true;
     }
   });
@@ -138,7 +131,7 @@ function handleRequest(req, res) {
 
 // inject any custom header values into a proxy request
 // along with the x-forwarded-for, x-forwarded-port, and via headers
-function writeProxyHeaders(req){
+function injectProxyHeaders(req){
   // inject any custom headers as configured
   config.headers.forEach(function(header){
     req.headers[header.name] = header.value;
@@ -146,6 +139,21 @@ function writeProxyHeaders(req){
 
   req.headers['x-forwarded-for'] = req.connection.remoteAddress || req.connection.socket.remoteAddress;
   req.headers['x-forwarded-port'] = req.connection.remotePort || req.connection.socket.remotePort;
+}
+
+// injects any LAN proxy servers into the request
+function proxyRequest(req, res, rule) {
+  injectProxyHeaders(req);
+  
+  if (null != config.gateway){
+    info('proxy', req.method + ' ' + req.url + ' --> ' + config.gateway.host + ':' + config.gateway.port +  ' --> ' + rule.target.host + ':' + rule.target.port);
+    req.url = url.parse('http://' + rule.target.host + ':' + rule.target.port + req.url).href;
+    req.headers['host'] = rule.target.host;
+    server.proxyRequest(req, res, { host: config.gateway.host, port: config.gateway.port, auth: config.gateway.auth });
+  } else {
+    info('proxy', req.method + ' ' + req.url + ' --> ' + rule.target.host + ':' + rule.target.port);
+    server.proxyRequest(req, res, { host: rule.target.host, port: rule.target.port});
+  }
 }
 
 // writes info messages to the console
@@ -163,6 +171,7 @@ function config() {
   var config = {
         port: 8080,
         webroot: process.cwd(),
+        gateway: null,
         forward: [],
         headers: []
       },
@@ -183,12 +192,26 @@ function config() {
   } else {
     // read the command line arguments if no config file was given
     parseArgument(argv.port,    function(item) { config.port = item; });
+    parseArgument(argv.gateway, function(item) { config.gateway = parseTargetServer(item); config.gateway.auth = url.parse(item).auth; });
     parseArgument(argv.forward, function(item) { config.forward.push(parseForwardRule(item)); });
     parseArgument(argv.header,  function(item) { config.headers.push(parseHeaderRule(item)); });
     parseArgument(argv._,       function(item) { config.webroot = path.resolve(path.normalize(item)); });
   }
 
   return config;
+}
+
+function printConfig() {
+  // display the config as parsed
+  util.puts(banner.rainbow.bold);
+  info('proxy', 'listening on port ' + config.port);
+  if (null != config.gateway) {
+    info('proxy', 'routing forward rules via gateway ' + config.gateway.host + ':' + config.gateway.port);
+  }
+  config.forward.forEach(function(rule) {
+    info('proxy', 'forwarding ' + rule.regexp.source + ' --> ' + rule.target.host + ':' + rule.target.port);
+  });
+  info('serve', 'hosting local files from ' + config.webroot);
 }
 
 function parseCommandLine() {
@@ -203,6 +226,8 @@ function parseCommandLine() {
         .describe('h', 'a custom request header (ex. iv-user=johndoe)')
         .alias('c', 'config')
         .describe('c', 'a config file')
+        .alias('g', 'gateway')
+        .describe('g', 'a local network HTTP proxy to route forward rules through')
         .alias('?', 'help')
         .describe('?', 'about this utility')
         .argv;
@@ -220,6 +245,9 @@ function parseFile(filepath, config) {
     try {
       var data = fs.readFileSync(temp);
       config = JSON.parse(data.toString());
+
+      // replace the token $config_dir with the absolute path to the configuredg file
+      config.webroot = path.resolve(config.webroot.replace("$config_dir", path.dirname(filepath)));
 
       // transform the forwarding rules from a map to an array
       if (config.forward) {
@@ -278,7 +306,6 @@ function parseHeaderRule() {
 // parses rule syntax to create forwarding rules
 function parseForwardRule() {
   var token = { name: null, value: null },
-      url,
       rule;
 
   if (arguments[0] == null)
@@ -292,16 +319,24 @@ function parseForwardRule() {
   }
 
   try {
-    // ignore any protocol handlers for the forwarding rule
-    url = token.value.replace('http://', '').replace('https://', '');
-    url = url.split(':');
-    rule = { regexp: new RegExp(token.name, 'i'), target: { host: url[0], port: url[1] || 80 } };
+    rule = { regexp: new RegExp(token.name, 'i'), target: parseTargetServer(token.value) };
   }  catch(ex) {
     warn('error', 'cannot parse the forwarding rule ' + arguments[0] + ' - ' + ex);
     process.exit(1);
   }
 
   return rule;
+}
+
+// parses a simple hostname:port argument, defaulting to port 80 if not specified
+function parseTargetServer(value) {
+  var target;
+  // insert a http protocol handler if not found in the string
+  if (value.indexOf('http://') != 0 && value.indexOf('https://') != 0) {
+    value = 'http://' + value + '/';
+  }
+  target = url.parse(value);
+  return { host: target.hostname, port: target.port || 80 };
 }
 
 // reads name/value tokens for command lengthine parameters

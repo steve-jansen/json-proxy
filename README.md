@@ -26,11 +26,12 @@ the app server on their local dev machine.
 * multiple -f options are allowed
 * [directory] defaults to the current working directory
 * options:
-  * `-p, --port     The TCP port for the proxy server        [default: 8080]`
-  * `-f, --forward  a forwarding rule (ex. /foo=server/foo)`
-  * `-c, --config   a config file`                      
-  * `-?, --help     this help screen`
-
+  -p, --port     The TCP port for the proxy server [default: 8080]
+  -f, --forward  a forwarding rule (ex. /foo=server/foo)
+  -h, --header   a custom request header (ex. iv-user=johndoe)
+  -c, --config   a config file
+  -g, --gateway  a local network HTTP proxy to route forward rules through
+  -?, --help     about this utility
 
 # Examples
 `node server.js -p 8080 -f /api=server:8080 -h iv-user=janedoe examples`
