@@ -235,42 +235,54 @@ function parseCommandLine() {
 // or fallback to a file name json-proxy.config in the working directory
 // return true if the file can be read, otherwise return false
 function parseFile(filepath, config) {
-  var temp = filepath || path.join(process.cwd(), '/json-proxy.json'),
-      result = null;
+  var result = null,
+      temp = null;
 
   // if we were passed a config file, read and parse it
-  if (fs.existsSync(temp)) {
-    try {
-      var data = fs.readFileSync(temp);
-      config = JSON.parse(data.toString());
-
-      // replace the token $config_dir with the absolute path to the configuredg file
-      config.webroot = path.resolve(config.webroot.replace("$config_dir", path.dirname(filepath)));
-
-      // transform the forwarding rules from a map to an array
-      if (config.forward) {
-        temp = [];
-        for(var item in config.forward) {
-          temp.push(parseForwardRule(item, config.forward[item]));
-        }
-        config.forward = temp;
-        exists = true;
-      }
-
-      // transform the headers rules from a map to an array
-      if (config.headers) {
-        temp = [];
-        for(var item in config.headers) {
-          temp.push(parseHeaderRule(item, config.headers[item]));
-        }
-        config.headers = temp;
-        result = config;
-      }
-    } catch (ex) {
-      warn('error', 'Cannot parse the config file: ' + ex);
+  if (null != filepath) {
+    if (!fs.existsSync(filepath)) {
+      warn('error', 'config file not found - ' + filepath);
       process.exit(1);
     }
+  } else {
+    // try falling back to the json-proxy.json file in the parent folder of this script
+    filepath = path.join(process.cwd(), '/json-proxy.json');
+    if (!fs.existsSync(filepath)) {
+      return result; // exit quietly if this file is not present
+    }
   }
+
+  try {
+    var data = fs.readFileSync(filepath);
+    config = JSON.parse(data.toString());
+
+    // replace the token $config_dir with the absolute path to the configuredg file
+    config.webroot = path.resolve(config.webroot.replace("$config_dir", path.dirname(filepath)));
+
+    // transform the forwarding rules from a map to an array
+    if (config.forward) {
+      temp = [];
+      for(var item in config.forward) {
+        temp.push(parseForwardRule(item, config.forward[item]));
+      }
+      config.forward = temp;
+      exists = true;
+    }
+
+    // transform the headers rules from a map to an array
+    if (config.headers) {
+      temp = [];
+      for(var item in config.headers) {
+        temp.push(parseHeaderRule(item, config.headers[item]));
+      }
+      config.headers = temp;
+    }
+    result = config;
+  } catch (ex) {
+    warn('error', 'Cannot parse the config file: ' + ex);
+    process.exit(1);
+  }
+  
   return result;
 }
 
