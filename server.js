@@ -32,12 +32,12 @@
 
 const banner = [
   '',
-  '  ##   #####  #####       #####  #####   ####  #    # #   #',
-  ' #  #  #    #   #         #    # #    # #    #  #  #   # # ',
-  '#    # #    #   #   ##### #    # #    # #    #   ##     #  ',
-  '###### #####    #         #####  #####  #    #   ##     #  ',
-  '#    # #        #         #      #   #  #    #  #  #    #  ',
-  '#    # #      #####       #      #    #  ####  #    #   #  ',
+  ' #####  ####   ####  #    #       #####  #####   ####  #    # #   #',
+  '   #   #      #    # ##   #       #    # #    # #    #  #  #   # # ',
+  '   #    ####  #    # # #  # ##### #    # #    # #    #   ##     #  ',
+  '   #        # #    # #  # #       #####  #####  #    #   ##     #  ',
+  '#  #        # #    # #   ##       #      #   #  #    #  #  #    #  ',
+  '####   #####   ####  #    #       #      #    #  ####  #    #   #  ',
   ''
 ].join('\n');
 
@@ -114,17 +114,15 @@ function handleRequest(req, res) {
 
   // try to serve the request locally, if the url didn't match a proxy rule pattern
   if (!match) {
-    req.addListener('end', function() {
-      file.serve(req, res, function(err, result) {
-        if (err) {
-          warn('serve', req.method + ' ' + req.url + ' - error ' + err.status + ' - ' + err.message);
-          res.writeHead(err.status, err.headers);
-          res.write(err.status.toString())
-          res.end();
-        } else {
-          info('serve', req.method + ' ' + req.url);
-        }
-      });
+    file.serve(req, res, function(err, result) {
+      if (err) {
+        warn('serve', req.method + ' ' + req.url + ' - error ' + err.status + ' - ' + err.message);
+        res.writeHead(err.status, err.headers);
+        res.write(err.status.toString())
+        res.end();
+      } else {
+        info('serve', req.method + ' ' + req.url);
+      }
     });
   }
 }
