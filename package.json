@@ -1,14 +1,17 @@
 {
   "name": "json-proxy",
-  "description": "A static file web server for UI developers that proxies JSON API calls to one or more remote web servers without requiring CORS or JSONP.",
+  "version": "0.1.0",
+  "description": "A command line utility and Express/Grunt middleware for UI developers to proxy JSON API calls to one or more remote web servers without requiring CORS or JSONP.",
+  "keywords": [
+    "utility",
+    "proxy",
+    "grunt",
+    "middleware"
+  ],
+  "license" : "MIT",
   "author": {
     "name": "steve-jansen"
   },
-  "version": "0.0.5",
-  "keywords": [
-    "utility",
-    "proxy"
-  ],
   "homepage": "https://github.com/steve-jansen/json-proxy",
   "repository": {
     "type": "git",
@@ -18,13 +21,24 @@
     "url": "https://github.com/steve-jansen/json-proxy/issues",
     "email":  "stevejansen_github@icloud.com"
   },
-  "bin": "./server.js",
+  "main": "./index.js",
+  "bin": { "json-proxy" : "./bin/json-proxy" },
+  "engine": "node >= 0.8.x",
   "dependencies": {
-    "node-static": ">= 0.6.7",
-    "http-proxy": ">= 0.8.7",
+    "express": ">=3.3.4",
+    "http-proxy": ">=0.8.7",
     "colors": ">=0.6.0",
     "util": ">= 0.4.9",
     "optimist": ">=0.3.5"
   },
-  "engine": "node >= 0.8.x"
+  "devDependencies": {
+    "mocha": ">=1.12.0",
+    "tmp": ">=0.0.20",
+    "nock": ">=0.22.1",
+    "portfinder": ">=0.2.1",
+    "jshint": ">=2.1.9"
+  },
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --recursive spec/*"
+  }
 }

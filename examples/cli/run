@@ -1,0 +1,8 @@
+#!/bin/sh
+
+readonly script_path=`cd ${0%/*} && echo $PWD`
+readonly script_name=${0##*/}
+
+pushd "$script_path/../.." >/dev/null
+
+node lib/cli.js -c examples/cli/json-proxy.json

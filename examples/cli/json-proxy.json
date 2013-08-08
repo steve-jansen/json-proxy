@@ -1,0 +1,11 @@
+{
+  "port": 8080,
+  "webroot": "$config_dir",
+  "html5mode": "/index.html", 
+  "forward": {
+    "/channel": "http://www.youtube.com"
+  },
+  "headers": {
+  	"X-Remote-User": "John Doe"
+  }
+}
