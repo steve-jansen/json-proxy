@@ -1,6 +1,6 @@
 {
   "name": "json-proxy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A command line utility and Express/Grunt middleware for UI developers to proxy JSON API calls to one or more remote web servers without requiring CORS or JSONP.",
   "keywords": [
     "utility",
@@ -28,7 +28,7 @@
     "express": ">=3.3.4",
     "http-proxy": ">=0.8.7",
     "colors": ">=0.6.0",
-    "util": ">= 0.4.9",
+    "util": ">=0.4.9",
     "optimist": ">=0.3.5"
   },
   "devDependencies": {
