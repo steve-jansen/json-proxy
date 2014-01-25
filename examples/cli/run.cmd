@@ -8,7 +8,7 @@ POPD >NUL
 
 PUSHD "%script_path%/../.." >NUL
 
-node lib/cli.js -c examples/cli/json-proxy.json --html5mode
+node bin/json-proxy -c examples/cli/json-proxy.json --html5mode
 
 POPD >NUL
 
