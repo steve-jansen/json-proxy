@@ -1,6 +1,6 @@
 {
   "name": "json-proxy",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A command line utility and Express/Grunt middleware for UI developers to proxy JSON API calls to one or more remote web servers without requiring CORS or JSONP.",
   "keywords": [
     "utility",
@@ -25,20 +25,23 @@
   "bin": { "json-proxy" : "./bin/json-proxy" },
   "engine": "node >= 0.8.x",
   "dependencies": {
-    "express": "~3.3.4",
-    "http-proxy": "0.10.4",
-    "colors": ">~0.6.0",
-    "util": "~0.4.9",
+    "http-proxy": "~1.1.0",
+    "colors": "~0.6.0",
     "optimist": "~0.6.0"
   },
   "devDependencies": {
-    "mocha": ">=1.12.0",
-    "tmp": ">=0.0.20",
-    "nock": ">=0.22.1",
-    "portfinder": ">=0.2.1",
+    "express": "~3.3.4",
+    "istanbul": "~0.3.0",
+    "mocha": "~1.12.0",
+    "tmp": "~0.0.24",
+    "nock": "~0.42.1",
+    "portfinder": "~0.2.1",
+    "async": "~0.9.0",
+    "request": "~2.37.0",
     "jshint": ">=2.1.9"
   },
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive spec/*"
+    "jshint": "node node_modules/.bin/jshint lib/*  --show-non-errors",
+    "test": "node node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha --dir ./.coverage -- --recursive ./spec/*.js --reporter spec"
   }
 }

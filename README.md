@@ -33,6 +33,49 @@ For Grunt middleware:
 
 		npm install json-proxy --save-dev
 
+### Example Apps
+
+An example of the json-proxy CLI can be run via the following shell scripts:
+
+#### Windows
+```
+examples/cli/run
+```
+
+#### OS X and *nix
+```
+./examples/cli/run
+```
+
+An example of using json-proxy as express middleware can be run via:
+
+```
+node examples/middleware/index.js
+```
+
+An example of using json-proxy as grunt middleware can be run via:
+
+#### Windows
+```
+cd examples/grunt
+npm install -g grunt
+npm install -g bower
+npm install ../../../json-proxy
+npm install
+bower install
+grunt serve
+```
+
+#### OS X and *nix
+```
+cd examples/grunt
+sudo npm install -g grunt
+sudo npm install -g bower
+npm install ../../../json-proxy
+npm install
+bower install
+grunt serve
+```
 
 ### CLI Usage
 
@@ -66,16 +109,56 @@ Options:
 
 ### Grunt Usage
 
-For use as middleware in grunt, simply add the following to the top of your array of middleware.
+For Grunt build files using grunt-contrib-connect v0.8.0 or higher:
 
-  require('json-proxy').initialize({}),
+```js
+livereload: {
+  options: {
+    middleware: function(connect, options, middlewares) {
+      // inject json-proxy to the front of the default middlewares array
+      middlewares.unshift(
+        require('json-proxy').initialize({
+          proxy: {
+            forward: {
+              '/api/': 'http://api.example.com:8080'
+            },
+            headers: {
+              'X-Forwarded-User': 'John Doe'
+            }
+          }
+        })
+      );
 
-Normally, you will pass in options to this call to override the defaults:
+      return middlewares;
+    }
+  }
+}
+```
+
+You may also maintain the config options in an external file:
+
+```js
+livereload: {
+  options: {
+    middleware: function(connect, options, middlewares) {
+      // inject json-proxy to the front of the default middlewares array
+      middlewares.unshift(
+        require('json-proxy').initialize({file: './myconfig.json' })
+      );
+
+      return middlewares;
+    }
+  }
+}
+```
+
+For Grunt build files using `lrSnippet` in the livereload task,
+place json-proxy before `lrSnippet` in the array of connect middlewares:
 
 ```js
 livereload: {
     options: {
-        middleware: function (connect) {
+        middleware: function(connect) {
             return [
 		          	require('json-proxy').initialize({
 							    proxy: {
@@ -96,21 +179,18 @@ livereload: {
 }
 ```
 
-Or you can store the config options in an external file:
+### Developing
 
-```js
-livereload: {
-    options: {
-        middleware: function (connect) {
-            return [
-		          	require('json-proxy').initialize({ file: './myconfig.json' }), // <-- here
-                lrSnippet,
-                mountFolder(connect, '.tmp'),
-                mountFolder(connect, yeomanConfig.app)
-            ];
-        }
-    }
-}
+Unit tests are run with code coverage reporting via:
+
+```
+npm test
+```
+
+JSHint style checking is performed via:
+
+```
+npm run-script jshint
 ```
 
 ### Credits

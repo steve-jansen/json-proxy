@@ -3,7 +3,7 @@
   "webroot": "$config_dir",
   "html5mode": "/index.html", 
   "forward": {
-    "/channel": "http://www.youtube.com"
+    "/channel": "https://www.youtube.com:443"
   },
   "headers": {
   	"X-Remote-User": "John Doe"

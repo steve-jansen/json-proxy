@@ -11,6 +11,7 @@ var assert  = require('assert'),
 
 var proxyPort,
     server,
+    gatewayServer,
     tmpdir,
     endpoints;
 
@@ -19,7 +20,12 @@ by explicity setting all config items to be non-null */
 var config = {
   server: {},
   proxy: {
-    gateway: {}, 
+    gateway: {
+      protocol: 'http:',
+      host: 'localhost',
+      port: 0,
+      auth: 'proxyuser:C0mp13x_!d0rd$$@P!' //'user:password' //
+    },  
     forward: {
       '/api': 'http://api.example.com',
       '/foo/\\d+/bar': 'http://www.example.com',
@@ -28,10 +34,9 @@ var config = {
   }
 };
 
-
 before(function(done){
   async.series([
-    function configureNock(done) {
+    function configureNock(callback) {
       nock.disableNetConnect();
       nock.enableNetConnect('localhost');
 
@@ -53,9 +58,35 @@ before(function(done){
         .reply(404),
       ];
 
-      done();
+      callback();
     },
-    function configureEndPoint(done) {
+    function configureLanProxy(callback) {
+      var portfinder = require('portfinder'),
+          endPointPort = proxyPort,
+          request = require('request');
+
+      portfinder.getPort(function (err, port) {
+        if (err)
+          throw(err);
+
+        config.proxy.gateway.port = port;
+
+        gatewayServer = require('http').createServer(function (req, res) {
+          // validate the proxy target
+          if (req.url !== req.headers['x-forwarded-url']) {
+              res.writeHead(500);
+              res.end("invalid proxy request");
+              return;
+          }
+
+          req.pipe(request(req.url)).pipe(res)
+        });
+        gatewayServer.listen(port, function() {
+          callback();
+        });
+      });
+    },
+    function configureEndPoint(callback) {
       var portfinder = require('portfinder');
       tmp.dir(function(err, filepath){
         portfinder.getPort(function (err, port) {
@@ -72,20 +103,20 @@ before(function(done){
             app.use(express.static(tmpdir));
           });
           server = require('http').createServer(app);
-          server.listen(proxyPort, function() {
-            done();
+          server.listen(port, function() {
+            callback();
           });
         });
       });
     }
   ], function(err) {
     if (err) throw err;
-
     done();
   })
 });
 
-describe('the proxy middleware', function(done) {
+
+describe('the proxy middleware using a HTTP gateway proxy on the LAN', function(done) {
   it('should fallback to static files', function(done){
     http.get('http://localhost:' + proxyPort + '/index.txt', function(res) {
       res.on('data', function (chunk) {
@@ -156,6 +187,7 @@ describe('the proxy middleware', function(done) {
   });
 
 
+  
 });
 
 after(function(done){
@@ -163,9 +195,10 @@ after(function(done){
     endpoint.done();
   });
   server.close();
+  gatewayServer.close();
+  fs.unlinkSync(path.join(tmpdir, '/index.txt'));
   nock.enableNetConnect();
   nock.cleanAll();
   nock.restore();
-  fs.unlinkSync(path.join(tmpdir, '/index.txt'));
   done();
 });
