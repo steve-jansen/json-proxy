@@ -1,11 +1,18 @@
 {
   "name": "json-proxy",
   "version": "0.2.0",
-  "description": "A command line utility and Express/Grunt middleware for UI developers to proxy JSON API calls to one or more remote web servers without requiring CORS or JSONP.",
+  "description": "Grunt plugin / CLI utility / Express middleware to proxy API requests to remote servers without CORS or JSONP.",
   "keywords": [
     "utility",
     "proxy",
+    "json proxy",
+    "api proxy",
     "grunt",
+    "gruntplugin",
+    "grunt proxy",
+    "connect proxy",
+    "connect proxy",
+    "express proxy",
     "middleware"
   ],
   "license" : "MIT",
