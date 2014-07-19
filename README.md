@@ -1,18 +1,32 @@
 json-proxy
 ==========
 
-A utility for UI developers to proxy JSON API calls to remote servers
-while serving all other requests locally without CORS or JSONP.
+Run HTML5 apps locally and proxy your API calls to remote servers effortlessly
+without CORS or JSONP :sunglasses:
 
-Works both as Express/Connect middleware and a CLI utility.
+Use json-proxy on the command line, as a grunt plugin for `grunt serve` livereloads, 
+or as middleware inside Express or Connect NodeJS apps.
 
-A set of forwarding rules matches URLs that should be forwarded to remote
-servers.  Also supports injection of custom HTTP request headers to
-forwarded requests.
+Forwarding rules match URLs to proxy to remote servers.  
+
+Optionally injects custom HTTP request headers when proxying, which is great for
+API tokens or authentication credentials during early prototyping.
+
+### Screenshot of the CLI utility
 
 ![screenshot](https://raw.github.com/wiki/steve-jansen/json-proxy/screenshot.png)
 
+### Status
+
+[![Build Status](https://travis-ci.org/steve-jansen/json-proxy.svg?branch=master)](https://travis-ci.org/steve-jansen/json-proxy)
+[![Code Climate](https://codeclimate.com/github/steve-jansen/json-proxy.png)](https://codeclimate.com/github/steve-jansen/json-proxy)
+[![Test Coverage](https://codeclimate.com/github/steve-jansen/json-proxy/coverage.png)](https://codeclimate.com/github/steve-jansen/json-proxy)
+![npm dependencies](https://david-dm.org/steve-jansen/json-proxy.png)
+
+[![NPM](https://nodei.co/npm/json-proxy.png?downloads=true&stars=true)](https://nodei.co/npm/json-proxy/)
+
 ### Why write yet another Node.JS proxy??
+
 My shop has much love for HTML5 single page apps that call server-side JSON APIs.
 We're pretty open minded about server stacks, so the API might run on a Ruby, .Net,
 or Play! app server.  This utility enables our front end UI devs to focus on writing
