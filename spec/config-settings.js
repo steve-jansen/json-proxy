@@ -296,7 +296,7 @@ describe('the config settings', function() {
                 argv: argv,
                 server: {
                     port: 54321,
-                    webroot: process.env['TEMP'] || process.env['TMPDIR']
+                    webroot: process.env['TEMP'] || process.env['TMPDIR'] || '/tmp'
                 },
                 proxy: {
                     gateway: 'http://nowhere.example.com',
@@ -310,7 +310,7 @@ describe('the config settings', function() {
             });
 
             assert.equal(config.server.port, 54321, 'the config should use the explicit option for the server port');
-            assert.equal(config.server.webroot, path.normalize(process.env['TEMP'] || process.env['TMPDIR']), 'the config should use the explicit option for the webroot');
+            assert.equal(config.server.webroot, path.normalize(process.env['TEMP'] || process.env['TMPDIR'] || '/tmp'), 'the config should use the explicit option for the webroot');
             assert.equal(config.proxy.gateway.host, 'nowhere.example.com', 'the config should use the explicit option for the gateway/host');
             assert.equal(config.proxy.gateway.port, 80, 'the config should use the explicit option for the gateway/port');
             assert.equal(config.proxy.gateway.auth, null, 'the config should use the explicit option for the gateway/auth');
@@ -370,7 +370,7 @@ describe('explicit options using an external config file', function() {
                 expected = {
                     server: {
                         port: 54321,
-                        webroot: process.env['TEMP'] || process.env['TMPDIR']
+                        webroot: process.env['TEMP'] || process.env['TMPDIR'] || '/tmp'
                     },
                     proxy: {
                         gateway: 'http://nowhere.example.com',
@@ -398,7 +398,7 @@ describe('explicit options using an external config file', function() {
             config = configParser({ file: filepath });
 
             assert.equal(config.server.port, 54321, 'the config should use the explicit option for the server port');
-            assert.equal(config.server.webroot, path.normalize(process.env['TEMP'] || process.env['TMPDIR']), 'the config should use the explicit option for the webroot');
+            assert.equal(config.server.webroot, path.normalize(process.env['TEMP'] || process.env['TMPDIR'] || '/tmp'), 'the config should use the explicit option for the webroot');
             assert.equal(config.proxy.gateway.host, 'nowhere.example.com', 'the config should use the explicit option for the gateway/host');
             assert.equal(config.proxy.gateway.port, 80, 'the config should use the explicit option for the gateway/port');
             assert.equal(config.proxy.gateway.auth, null, 'the config should use the explicit option for the gateway/auth');
