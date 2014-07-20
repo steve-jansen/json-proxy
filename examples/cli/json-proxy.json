@@ -3,7 +3,9 @@
   "webroot": "$config_dir",
   "html5mode": "/index.html", 
   "forward": {
-    "/channel": "https://www.youtube.com:443"
+    "/channel": "https://www.youtube.com:443",
+    "/events/(.*)": "http://news.google.com/news/section?topic=$1",
+    "/news/": "http://news.google.com"
   },
   "headers": {
   	"X-Remote-User": "John Doe"

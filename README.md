@@ -193,6 +193,118 @@ livereload: {
 }
 ```
 
+### Forwarding Rules
+
+The forwarding rules for proxying support a number of different scenarios.
+
+The forwarding rules use regular expressions in the spirit of nginx rewrite rules.
+
+json-proxy will always preserve the request body (e.g., requests with 
+`POST`, `PUT`, or `PATCH` verbs).  json-proxy will generally preserve
+request headers, except in two situations.  Custom headers in the config will
+always clobber the existing value of the same header in the original request.
+The proxy will also clobber headers typically used by proxy servers
+(e.g., `Via`, `X-Forwarded-For`).
+
+**TIP:** Reserved characters in Regex such as `?` and 
+[Regex character classes](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters) like `\d` (digits) and `\s` (whitespace) require escaping with a backslash
+in forwaring rules (e.g. `'\?'`, `'\\d'`, `'\\s'`).
+
+
+#### Forwarding the requested URL "as is" to another server
+
+This scenario is the original use case for json-proxy and works
+out of the box without any special syntax. Specify the local URL path
+to match and the remote server:
+
+``` js
+var config = {
+  "forward": {
+    "/api/": "http://api.example.com"
+  }
+};
+```
+
+This config would forward requests for `/api/*` to 
+`http://api.example.com:80/api/*`.
+
+
+#### Pattern matching a URL
+
+
+``` js
+var config = {
+  "forward": {
+    "/user/\\d+/email": "http://api.example.com"
+  }
+};
+
+```
+
+This config would forward requests for `/user/12345/email` to 
+`http://api.example.biz:80/user/12345/email`.
+
+
+#### URL Rewriting to delete a base path from the requested URL
+
+You will need to use a regex capture group to delete fragments from the
+requested URL.  Use `()`s to identify the fragments you want to keep in
+the orignally requested URL.  Use `$1`, `$2`, ... `$9` in the target URL
+to include the captured fragments.
+
+``` js
+var config = {
+  "forward": {
+    "/remote-api/(.*)": "https://api.example.com/$1"
+  }
+};
+
+```
+
+This config would forward requests for `/remote-api/*` to 
+`https://api.example.biz:443/*`.
+
+
+#### URL Rewriting to add a base path to the requested URL
+
+The target server can prepend a base path for remote servers:
+
+``` js
+var config = {
+  "forward": {
+    "/junction/": "http://www.example.com/subapp"
+  }
+};
+
+```
+
+This config would forward requests for `/junction/*` to 
+`http://api.example.biz:80/subapp/junction/*`.
+
+
+#### URL Rewriting to rearrange fragments
+
+``` js
+var config = {
+  "forward": {
+    "/user/(\\d+)/email/(\\S+)?(.*)": "http://api.example.com/account?id=$1&email=$2&$3"
+  }
+};
+
+```
+
+This config would forward requests for `/user/12345/email/987` to 
+`http://api.example.biz:443/account/12345/subscriptions/987`.
+
+
+### WebSockets
+
+WebSockets are not implemented yet.  WebSockets seem straightforward
+to implement with the http-proxy module.
+Please [create an issue](https://github.com/steve-jansen/json-proxy/issues/new) 
+if you need WebSocket support, along some details on your desired use case to
+help spec the tests.
+
 ### Developing
 
 Unit tests are run with code coverage reporting via:
@@ -201,7 +313,9 @@ Unit tests are run with code coverage reporting via:
 npm test
 ```
 
-JSHint style checking is performed via:
+New features and fixes should include relevant test cases.
+
+JSHint style checking should always pass:
 
 ```
 npm run-script jshint
