@@ -6,4 +6,4 @@ node_js:
 
 after_script:
   - npm run-script jshint
-  - CODECLIMATE_REPO_TOKEN=9fa850087ebd65087f3754648c7d55647685cf583fa55b27474bcc76695c1e56 node_modules/.bin/codeclimate < .coverage/lcov.info
+  - npm run-script codeclimate

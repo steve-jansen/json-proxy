@@ -50,6 +50,7 @@
   },
   "scripts": {
     "jshint": "node node_modules/.bin/jshint lib/*  --show-non-errors",
-    "test": "node node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha --dir ./.coverage -- --recursive ./spec/*.js --reporter spec"
+    "test": "node node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha --dir ./.coverage -- --recursive ./spec/*.js --reporter spec",
+    "codeclimate": "CODECLIMATE_REPO_TOKEN=9fa850087ebd65087f3754648c7d55647685cf583fa55b27474bcc76695c1e56 node node_modules/.bin/codeclimate < .coverage/lcov.info"
   }
 }
