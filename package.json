@@ -15,7 +15,7 @@
     "express proxy",
     "middleware"
   ],
-  "license" : "MIT",
+  "license": "MIT",
   "author": {
     "name": "steve-jansen"
   },
@@ -24,17 +24,20 @@
     "type": "git",
     "url": "http://github.com/steve-jansen/json-proxy.git"
   },
-  "bugs": { 
+  "bugs": {
     "url": "https://github.com/steve-jansen/json-proxy/issues",
-    "email":  "stevejansen_github@icloud.com"
+    "email": "stevejansen_github@icloud.com"
   },
   "main": "./index.js",
-  "bin": { "json-proxy" : "./bin/json-proxy" },
+  "bin": {
+    "json-proxy": "./bin/json-proxy"
+  },
   "engine": "node >= 0.10.x",
   "dependencies": {
     "http-proxy": "~1.1.0",
     "colors": "~0.6.0",
-    "optimist": "~0.6.0"
+    "optimist": "~0.6.0",
+    "express": "^3.15.2"
   },
   "devDependencies": {
     "express": "~3.3.4",
