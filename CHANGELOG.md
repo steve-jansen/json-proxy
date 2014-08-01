@@ -2,6 +2,30 @@
 All notable changes to https://www.npmjs.org/package/json-proxy will be documented in this file.
 
 
+## 0.3.0 - 2014-08-01
+
+### Added
+- this CHANGELOG, thanks to http://keepachangelog.com/
+- forwarding rules now support URL rewriting via nginx style regex captures
+- injected headers can now use a function that accepts the req object and
+  returns a simple string
+- reuse the same unit test suites for proxying with and without a LAN HTTP proxy
+- resolved codeclimate complexity warnings
+- additional keywords in package.json for SEO with grunt plugins
+
+### Deprecated
+- Nothing.
+
+### Removed
+- Dropped support for parsing the v0.0.1 configuration format.  This means
+  that top level configuration values must be inside a `server` or `proxy`
+  configuration block.
+
+### Fixed
+- Restored express as a package dependency for `npm install -g json-proxy`.
+- Fixed checks for `undefined` and `null` introduced by jshint fixes.
+
+
 ## 0.2.0 - 2014-07-15
 
 ### Added
