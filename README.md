@@ -4,10 +4,10 @@ json-proxy
 Run HTML5 apps locally and proxy your API calls to remote servers effortlessly
 without CORS or JSONP :sunglasses:
 
-Use json-proxy on the command line, as a grunt plugin for `grunt serve` livereloads, 
+Use json-proxy on the command line, as a grunt plugin for `grunt serve` livereloads,
 or as middleware inside Express or Connect NodeJS apps.
 
-Forwarding rules match URLs to proxy to remote servers.  
+Forwarding rules match URLs to proxy to remote servers.
 
 Optionally injects custom HTTP request headers when proxying, which is great for
 API tokens or authentication credentials during early prototyping.
@@ -40,7 +40,7 @@ For CLI usage:
 		npm install -g json-proxy
 
 For Express/Connect middleware:
-	
+
 		npm install json-proxy
 
 For Grunt middleware:
@@ -111,14 +111,14 @@ Environmental variables:
   JSON_PROXY_GATEWAY_AUTH "username:password" credentials for --gateway)
 
 Options:
-  -p, --port     The TCP port for the proxy server                      
-  -f, --forward  a forwarding rule (ex. /foo=server/foo)                
-  -h, --header   a custom request header (ex. iv-user=johndoel)         
-  -c, --config   a config file                                          
+  -p, --port     The TCP port for the proxy server
+  -f, --forward  a forwarding rule (ex. /foo=server/foo)
+  -h, --header   a custom request header (ex. iv-user=johndoel)
+  -c, --config   a config file
   -g, --gateway  URL for a LAN HTTP proxy to use for forwarding requests
-  --html5mode    support AngularJS HTML5 mode by catching 404s          
-  -?, --help     about this utility                                     
-  --version      version info                                      
+  --html5mode    support AngularJS HTML5 mode by catching 404s
+  -?, --help     about this utility
+  --version      version info
  ```
 
 ### Grunt Usage
@@ -199,14 +199,14 @@ The forwarding rules for proxying support a number of different scenarios.
 
 The forwarding rules use regular expressions in the spirit of nginx rewrite rules.
 
-json-proxy will always preserve the request body (e.g., requests with 
+json-proxy will always preserve the request body (e.g., requests with
 `POST`, `PUT`, or `PATCH` verbs).  json-proxy will generally preserve
 request headers, except in two situations.  Custom headers in the config will
 always clobber the existing value of the same header in the original request.
 The proxy will also clobber headers typically used by proxy servers
 (e.g., `Via`, `X-Forwarded-For`).
 
-**TIP:** Reserved characters in Regex such as `?` and 
+**TIP:** Reserved characters in Regex such as `?` and
 [Regex character classes](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters) like `\d` (digits) and `\s` (whitespace) require escaping with a backslash
 in forwaring rules (e.g. `'\?'`, `'\\d'`, `'\\s'`).
 
@@ -225,7 +225,7 @@ var config = {
 };
 ```
 
-This config would forward requests for `/api/*` to 
+This config would forward requests for `/api/*` to
 `http://api.example.com:80/api/*`.
 
 
@@ -241,7 +241,7 @@ var config = {
 
 ```
 
-This config would forward requests for `/user/12345/email` to 
+This config would forward requests for `/user/12345/email` to
 `http://api.example.biz:80/user/12345/email`.
 
 
@@ -261,7 +261,7 @@ var config = {
 
 ```
 
-This config would forward requests for `/remote-api/*` to 
+This config would forward requests for `/remote-api/*` to
 `https://api.example.biz:443/*`.
 
 
@@ -278,7 +278,7 @@ var config = {
 
 ```
 
-This config would forward requests for `/junction/*` to 
+This config would forward requests for `/junction/*` to
 `http://api.example.biz:80/subapp/junction/*`.
 
 
@@ -293,9 +293,46 @@ var config = {
 
 ```
 
-This config would forward requests for `/user/12345/email/987` to 
+This config would forward requests for `/user/12345/email/987` to
 `http://api.example.biz:443/account/12345/subscriptions/987`.
 
+
+### Header Injection
+
+The proxy can optionally inject headers into proxied requests.  This is useful
+for remote endpoints that require headers values for authorization, like
+API tokens.  The value of the injected header may be either a string value
+or a function that accepts the request object and returns a string value.
+
+Examples:
+```
+{
+  proxy: {
+    forward: {
+      '/api/': 'http://api.example.com:8080'
+    },
+    headers: {
+      'X-Forwarded-User': 'John Doe'
+    }
+  }
+}
+```
+
+```
+{
+  proxy: {
+    forward: {
+      '/api/': 'http://api.example.com:8080'
+    },
+    headers: {
+      'Authorization':  function(req) {
+        accessToken = (req.user && req.user.access_token) ? req.user.access_token : 'api_token'
+        return 'Bearer '.concat(accessToken)
+      }
+    }
+  }
+}
+```
 
 ### WebSockets
 
@@ -326,6 +363,8 @@ This utility glues together the outstanding node packages
 [node-http-proxy by nodejitsu](https://github.com/nodejitsu/node-http-proxy) 
 and [node-static by cloudhead](https://github.com/cloudhead/node-static) for 
 proxying HTTP traffic and serving static files via HTTP.
+
+Thanks to @ehtb for contributing new features.
 
 ### Issues
 Please report bugs and features requets @ [https://github.com/steve-jansen/json-proxy/issues](https://github.com/steve-jansen/json-proxy/issues).

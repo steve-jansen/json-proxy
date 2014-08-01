@@ -137,7 +137,7 @@ exports.run = function run() {
     });
   });
 
-  it('send 500 errors when the server is unreachable', function(done){
+  it('sends 500 errors when the server is unreachable', function(done){
     http.get('http://localhost:'+ this.proxyPort + '/dns-error/hello/world', function(res) {
 
       assert.strictEqual(res.statusCode, 500);
@@ -146,6 +146,17 @@ exports.run = function run() {
         var o = JSON.parse(chunk);
         assert.strictEqual(o.error,  500);
         assert.strictEqual(o.message,  'Nock: Not allow net connect for "notfound.example.com:443"');
+        done();
+      });
+    });
+  });
+
+  it('can use a function for header injection', function(done){
+    http.get('http://localhost:'+ this.proxyPort + '/pull/15/token', function(res) {
+
+      res.on('data', function (chunk) {
+        var o = JSON.parse(chunk);
+        assert.strictEqual(o.author, 'ehtb');
         done();
       });
     });

@@ -65,7 +65,16 @@ function createDefaultConfig() {
         '/foo/\\d+/bar': 'http://www.example.com/',
         '/user/(\\d+)/email/(\\S+)\?(.*)': 'http://api.example.com/account?id=$1&email=$2&sort=asc',
         '/secure/': 'https://secure.example.com',
-        '/dns-error/': 'https://notfound.example.com'
+        '/dns-error/': 'https://notfound.example.com',
+        '/pull/15/(.*)': 'https://authorization.example.com/$1'
+      },
+      headers: {
+        'X-Test-Header': 'John Doe',
+        'X-Test-Header-Function': function(req) {
+          if (req.url === '/pull/15/token') {
+            return 'Bearer 0123456789abcdef';
+          }
+        }
       }
     }
   };
@@ -92,6 +101,9 @@ function configureNock(options) {
       // verify that the request was actually proxied
       instance.matchHeader('via', 'http://localhost:' + config.proxy.gateway.port);
     }
+
+    // verify the injected header
+    instance.matchHeader('x-test-header', 'John Doe');
 
     return instance;
   }
@@ -125,7 +137,12 @@ function configureNock(options) {
     .get('/secure/api/hello')
     .reply(200, '{ "hello": "world" }')
     .get('/secure/api/notfound')
-    .reply(404)
+    .reply(404),
+
+    createNock('https://authorization.example.com')
+    .matchHeader('X-Test-Header-Function', 'Bearer 0123456789abcdef')
+    .get('/token')
+    .reply(200, '{ "author": "ehtb" }')
   ];
 }
 
