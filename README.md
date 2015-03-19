@@ -41,7 +41,7 @@ For CLI usage:
 
 For Express/Connect middleware:
 
-		npm install json-proxy
+		npm install json-proxy --save
 
 For Grunt middleware:
 
