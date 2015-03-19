@@ -2,6 +2,23 @@
 All notable changes to https://www.npmjs.org/package/json-proxy will be documented in this file.
 
 
+## 0.3.1 - 2015-03-18
+
+### Added
+- Nothing.
+
+### Deprecated
+- Nothing.
+
+### Removed
+- Nothing.
+
+### Fixed
+- Update dependencies
+- Add Node 0.12 to Travis CI builds to verify compatability
+- Minor documentation and style fixes
+
+
 ## 0.3.0 - 2014-08-01
 
 ### Added
