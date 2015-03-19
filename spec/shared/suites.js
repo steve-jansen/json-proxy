@@ -145,7 +145,7 @@ exports.run = function run() {
       res.on('data', function (chunk) {
         var o = JSON.parse(chunk);
         assert.strictEqual(o.error,  500);
-        assert.strictEqual(o.message,  'Nock: Not allow net connect for "notfound.example.com:443"');
+        assert.strictEqual(o.message,  'Nock: Not allow net connect for "notfound.example.com:443/dns-error/hello/world"');
         done();
       });
     });
