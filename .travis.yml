@@ -7,3 +7,19 @@ node_js:
 after_script:
   - npm run-script jshint
   - npm run-script codeclimate
+
+before_deploy:
+  - npm shrinkwrap
+
+deploy:
+  provider: npm
+  email:
+    secure: "jMCSlirvqVipgt+ymR3i2wTDhSP7CJ52WUVpxpo9kdj9vEWsz+Hax9fCMQN6mTPQWYhgjaktSBZC5+YlT+a/wbkct1J4aiS1tAJljJHHAtiQ9rqyq7WCjnnb1XjvYUFjHsyYHABYRwkIEs+c2hxaMhsYXL8sWMd013NN6IRkN2U=" 
+  api_key:
+    secure: "ERKASlQZiOVhPxEZb5+hI80aT5csxnIOASa4LqgTKBucPVb0M2YivPpPM7eGKViL3vY+GH31gWy0cK1cVviDp1cnTKef8XRSpKBwEixd4lw5g+D1GnuLyszKHrtYF8Ti3WTgc62U+4zcvq8w0etPIFEP2dPZXrPDFSz3b+GTGK8="
+  on:
+    branch: master
+
+after_deploy:
+  - ./release.sh
+
