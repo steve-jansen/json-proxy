@@ -246,7 +246,7 @@ function configureLanProxy(options, config, done) {
 
     // determine if we are using a proxy that is not RFC compliant
     requestViaHeader = options.headers['Via'] ||
-                        'http://127.0.0.1:' + handles.port;
+                        '127.0.0.1:' + handles.port;
 
     responseHostHeader = options.headers['Host'] ||
                         req.headers['host'];
