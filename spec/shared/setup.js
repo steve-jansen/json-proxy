@@ -12,23 +12,33 @@ var fs      = require('fs'),
     app     = express(),
     proxy   = require('../../lib/proxy');
 
-var handles,
-    config,
-    rules;
+// global variable to track handles to open ports to be closed
+var handles;
+
+// global variable to track nock rules to assert at the end of a suite
+var rules;
 
 /**
  * Initializes the testing infrastructure needed for
  * verifying the behavior of the core proxy library -
  * nock, express, and httpServer.
- * @param  {[type]}   options flags for modifying the behavior of the test harness
+ *
+ * @param  {String}   connection one of 'direct', 'proxy', or 'non-rfc-proxy'
  * @param  {Function} done    the async callback
  */
-function setup(options, done) {
-  config = createDefaultConfig();
+function setup(connection, done) {
+  var config = createDefaultConfig(),
+      options = {
+        proxy: false,
+        headers: {}
+      };
 
+  // reset the global variable with handles to port numbers
   handles = {};
 
-  if (options.useLanProxy === true) {
+  if (connection !== 'direct') {
+    options.proxy = true;
+ 
     config.proxy.gateway = {
       protocol: 'http:',
       host: 'localhost',
@@ -36,13 +46,23 @@ function setup(options, done) {
       auth: 'proxyuser:C0mp13x_!d0rd$$@P!'
     };
 
-    configureLanProxy(function() {
-      configureNock(options);
-      configureExpress(done);
+    // optionally test a non-RFC proxy that expects explicit values
+    // for the  Via and/or Host request headers
+    if (connection === 'non-rfc-proxy') {
+      config.proxy.headers['Via'] = 'http://jedi.example.com';
+      config.proxy.headers['Host'] = 'force.example.com';
+    }
+
+    // the config map will be mutated by the json-proxy library, so clone it
+    options.headers = require('util')._extend(config.proxy.headers);
+
+    configureLanProxy(options, config, function() {
+      configureNock(options, config);
+      configureExpress(config, done);
     })
   } else {
-    configureNock(options);
-    configureExpress(done);
+    configureNock(options, config);
+    configureExpress(config, done);
   }
 }
 
@@ -83,23 +103,30 @@ function createDefaultConfig() {
 /**
  * configures nock globally for a test run
  *
- * @param  {Array}    expectedHeaders an optional array of name/value pairs
- *                                    of headers to expect on incoming requests,
- *                                    like `via` or `authorization`
+ * @param  {Object.<string, string>} options  the options for configuring this
+ *                                            test suite
+ * @param  {Object.<string, string>} config   the config of the json-proxy for
+ *                                            this test suite
  * @returns {Array}  an array of configured nock instances
  */
-function configureNock(options) {
+function configureNock(options, config) {
   var result = {};
   // deny all real net connections except for localhost
   nock.disableNetConnect();
   nock.enableNetConnect('localhost');
 
   function createNock(url) {
-    var instance = nock(url);
+    var instance = nock(url),
+        expectedViaHeader = options.headers['Via'] ||
+                            'http://localhost:' + config.proxy.gateway.port,
+        expectedHostHeader = options.headers['Host'] || /.*/;
 
-    if (options.useLanProxy === true) {
+    if (options.proxy === true) {
       // verify that the request was actually proxied
-      instance.matchHeader('via', 'http://localhost:' + config.proxy.gateway.port);
+      // optionally support downstream proxies with non-RFC expectations on
+      // the Host and Via request headers
+      instance.matchHeader('via', expectedViaHeader);
+      instance.matchHeader('host', expectedHostHeader);
     }
 
     // verify the injected header
@@ -149,10 +176,12 @@ function configureNock(options) {
 /**
  * Configures an express instance on a dynamically assigned port
  * for serving static files and proxying requests based on the config.
- * @param  {Function} done [description]
- * @return {[type]}        [description]
+ *
+ * @param  {Object.<string, string>} config   the config of the json-proxy for
+ *                                            this test suite
+ * @param  {Function} done callback
  */
-function configureExpress(done) {
+function configureExpress(config, done) {
   var portfinder = require('portfinder');
 
   tmp.dir(function(err, filepath){
@@ -180,14 +209,21 @@ function configureExpress(done) {
  * Creates a simple LAN proxy using a vanilla HTTP server
  * that verifies the state of the proxy credentials and the x-forwarded-url
  * are correct.
+ * 
+ * @param  {Object.<string, string>} options  the options for configuring this
+ *                                            test suite
+ * @param  {Object.<string, string>} config   the config of the json-proxy for
+ *                                            this test suite
  * @param  {Function} done
  */
-function configureLanProxy(done) {
+function configureLanProxy(options, config, done) {
   var portfinder = require('portfinder'),
       request = require('request'),
       credentials = config.proxy.gateway.auth,
       gatewayPort,
-      expectedAuthorizationHeader;
+      expectedAuthorizationHeader,
+      requestViaHeader,
+      responseViaHeader;
 
   handles = handles || {};
 
@@ -208,10 +244,20 @@ function configureLanProxy(done) {
       return;
     }
 
+    // determine if we are using a proxy that is not RFC compliant
+    requestViaHeader = options.headers['Via'] ||
+                        'http://127.0.0.1:' + handles.port;
+
+    responseHostHeader = options.headers['Host'] ||
+                        req.headers['host'];
+
+    responseViaHeader = options.headers['Via'] ||
+                        'http://localhost:' + gatewayPort;
+
     // validate the via header was injected and points to 127.0.0.1 in either ipv4 or ipv6 format
-    if (req.headers['via'] === undefined || req.headers['via'] === null || req.headers['via'].indexOf('127.0.0.1:' + handles.port) === -1) {
+    if (req.headers['via'] === undefined || req.headers['via'] === null || req.headers['via'].indexOf(requestViaHeader) === -1) {
       res.writeHead(400);
-      res.end('{ "error": 400, "message": "invalid via header, expected ' + req.headers['via'] + '" }');
+      res.end('{ "error": 400, "message": "invalid via header, expected ' + requestViaHeader + '" }');
       return;
     }
 
@@ -220,7 +266,8 @@ function configureLanProxy(done) {
     // simulate the behavior of x-forwarded-for with multiple proxies
     req.headers['x-forwarded-for'] = [req.headers['x-forwarded-for'], req.headers['via']].join(', ');
     // change the via header to this server
-    req.headers['via'] = 'http://localhost:' + gatewayPort;
+    req.headers['via'] = responseViaHeader;
+    req.headers['host'] = responseHostHeader;
 
     var errorCallback = function errorCallback(err, repsonse, body) {
       if (err) {
@@ -230,7 +277,7 @@ function configureLanProxy(done) {
       }
     }
 
-    req.pipe(request(req.url, errorCallback)).pipe(res)
+    request(req, errorCallback).pipe(res);
   });
 
   portfinder.getPort(function (err, port) {
