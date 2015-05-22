@@ -2,6 +2,23 @@
 All notable changes to https://www.npmjs.org/package/json-proxy will be documented in this file.
 
 
+## 0.4.0 - 2015-05-22
+
+### Added
+- Support for overrideing the `Host` and `Via` request headers.
+- Continuous Delivery to npm via Travis CI
+
+### Deprecated
+- Nothing.
+
+### Removed
+- Nothing.
+
+### Fixed
+- npm-shrinkwrap was out of date for v0.3.x
+- Minor improvements to test suites structure
+
+
 ## 0.3.1 - 2015-03-18
 
 ### Added
