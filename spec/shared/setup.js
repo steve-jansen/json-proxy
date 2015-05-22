@@ -230,6 +230,13 @@ function configureLanProxy(options, config, done) {
   handles.gatewayServer = require('http').createServer(function (req, res) {
     expectedAuthorizationHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 
+    // HACK: node 0.12.x appears to inject a slash at the front
+    //       of absolute URLs
+    //       ex., GET http://www.example.com --> GET /http://www.exampel.com
+    if (req.url.charAt(0) === '/') {
+      req.url = req.url.substr(1);
+    }
+
     // validate the proxy target
     if (req.url !== req.headers['x-forwarded-url']) {
         res.writeHead(500);
