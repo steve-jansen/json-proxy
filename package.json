@@ -35,7 +35,7 @@
   "engine": "node >= 0.10.x",
   "dependencies": {
     "http-proxy": "~1.11.0",
-    "colors": "~1.0.3",
+    "colors": "~1.1.0",
     "optimist": "~0.6.1",
     "express": "~4.12.3",
     "morgan": "~1.5.2"
