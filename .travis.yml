@@ -4,6 +4,10 @@ node_js:
   - "0.12"
   - "0.10"
 
+branches:
+  except:
+    - /^v[0-9]/  # ignore building release tags
+
 after_success:
   - npm run-script jshint
   - npm run-script codeclimate
@@ -20,8 +24,4 @@ deploy:
   on:
     branch: master
     node: "0.12"
-
-after_deploy:
-  - chmod a+x ./release.sh
-  - ./release.sh
 

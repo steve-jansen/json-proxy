@@ -93,3 +93,6 @@ Session.vim
 .netrwhist
 *~
 
+### Travis ###
+.travis/
+
