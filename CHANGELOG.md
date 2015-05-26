@@ -1,6 +1,24 @@
 # Changelog
-All notable changes to https://www.npmjs.org/package/json-proxy will be documented in this file.
+All notable changes to https://www.npmjs.org/package/json-proxy will be
+documented in this file.
 
+
+## 0.9.0 - 2015-05-26
+
+Release candidate.  The json-proxy has been stable for almost a year now, time
+to consider rev'ing to 1.0.
+
+### Added
+- Nothing.
+
+### Deprecated
+- Nothing.
+
+### Removed
+- Git tagging with Travis. Will be done manually.
+
+### Fixed
+- Nothing.
 
 ## 0.4.0 - 2015-05-22
 
