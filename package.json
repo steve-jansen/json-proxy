@@ -34,22 +34,22 @@
   },
   "engine": "node >= 0.10.x",
   "dependencies": {
-    "http-proxy": "~1.11.0",
+    "http-proxy": "~1.15.0",
     "colors": "~1.1.0",
     "optimist": "~0.6.1",
-    "express": "~4.12.3",
-    "morgan": "~1.5.2"
+    "express": "~4.14.0",
+    "morgan": "~1.7.0"
   },
   "devDependencies": {
-    "istanbul": "~0.3.8",
-    "mocha": "~2.2.1",
+    "istanbul": "~0.4.5",
+    "mocha": "~3.1.2",
     "tmp": "~0.0.25",
-    "nock": "~2.2.0",
-    "portfinder": "~0.4.0",
-    "async": "~0.9.0",
-    "request": "~2.53.0",
-    "jshint": "~2.6.3",
-    "codeclimate-test-reporter": "*"
+    "nock": "~9.0.0",
+    "portfinder": "~1.0.9",
+    "async": "~2.1.0",
+    "request": "~2.76.0",
+    "jshint": "~2.9.4",
+    "codeclimate-test-reporter": "~0.4.0"
   },
   "scripts": {
     "jshint": "node node_modules/.bin/jshint lib/*  --show-non-errors",
