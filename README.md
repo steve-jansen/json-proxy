@@ -1,6 +1,8 @@
 json-proxy
 ==========
 
+[![Join the chat at https://gitter.im/steve-jansen/json-proxy](https://badges.gitter.im/steve-jansen/json-proxy.svg)](https://gitter.im/steve-jansen/json-proxy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Run HTML5 apps locally and proxy your API calls to remote servers effortlessly
 without CORS or JSONP :sunglasses:
 
