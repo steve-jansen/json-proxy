@@ -1,8 +1,9 @@
 language: node_js
 
 node_js:
-  - "0.12"
-  - "0.10"
+  - "6"
+  - "5"
+  - "4"
 
 branches:
   except:
@@ -23,5 +24,4 @@ deploy:
     secure: "ERKASlQZiOVhPxEZb5+hI80aT5csxnIOASa4LqgTKBucPVb0M2YivPpPM7eGKViL3vY+GH31gWy0cK1cVviDp1cnTKef8XRSpKBwEixd4lw5g+D1GnuLyszKHrtYF8Ti3WTgc62U+4zcvq8w0etPIFEP2dPZXrPDFSz3b+GTGK8="
   on:
     branch: master
-    node: "0.12"
-
+    node: "6"
