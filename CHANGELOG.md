@@ -2,6 +2,13 @@
 All notable changes to https://www.npmjs.org/package/json-proxy will be
 documented in this file.
 
+## 0.9.2
+
+Dependency updates
+
+## 0.9.1 - 2015-10-25
+
+Nothing signficant.  Trigged by Travis w/ build updates.
 
 ## 0.9.0 - 2015-05-26
 

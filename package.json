@@ -1,6 +1,6 @@
 {
   "name": "json-proxy",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Grunt plugin / CLI utility / Express middleware to proxy API requests to remote servers without CORS or JSONP.",
   "keywords": [
     "utility",
