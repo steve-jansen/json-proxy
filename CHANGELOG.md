@@ -2,6 +2,11 @@
 All notable changes to https://www.npmjs.org/package/json-proxy will be
 documented in this file.
 
+## 0.9.3
+
+### Fixed
+- Check for resource leak in proxy error callback
+
 ## 0.9.2
 
 Dependency updates
