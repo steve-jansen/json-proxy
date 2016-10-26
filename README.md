@@ -21,7 +21,7 @@ API tokens or authentication credentials during early prototyping.
 [![Build Status](https://travis-ci.org/steve-jansen/json-proxy.svg?branch=master)](https://travis-ci.org/steve-jansen/json-proxy)
 [![Code Climate](https://codeclimate.com/github/steve-jansen/json-proxy.png)](https://codeclimate.com/github/steve-jansen/json-proxy)
 [![Test Coverage](https://codeclimate.com/github/steve-jansen/json-proxy/coverage.png)](https://codeclimate.com/github/steve-jansen/json-proxy)
-![npm dependencies](https://david-dm.org/steve-jansen/json-proxy.png)
+[![npm dependencies](https://www.bithound.io/github/steve-jansen/json-proxy/badges/dependencies.svg)](https://www.bithound.io/github/steve-jansen/json-proxy/master/dependencies/npm)
 
 [![NPM](https://nodei.co/npm/json-proxy.png?downloads=true&stars=true)](https://nodei.co/npm/json-proxy/)
 
