@@ -11,17 +11,21 @@ branches:
 
 after_success:
   - npm run-script jshint
-  - npm run-script codeclimate
+  - codeclimate-test-reporter < .coverage/lcov.info
 
 before_deploy:
   - npm shrinkwrap
 
 deploy:
   provider: npm
-  email:
-    secure: "jMCSlirvqVipgt+ymR3i2wTDhSP7CJ52WUVpxpo9kdj9vEWsz+Hax9fCMQN6mTPQWYhgjaktSBZC5+YlT+a/wbkct1J4aiS1tAJljJHHAtiQ9rqyq7WCjnnb1XjvYUFjHsyYHABYRwkIEs+c2hxaMhsYXL8sWMd013NN6IRkN2U=" 
-  api_key:
-    secure: "ERKASlQZiOVhPxEZb5+hI80aT5csxnIOASa4LqgTKBucPVb0M2YivPpPM7eGKViL3vY+GH31gWy0cK1cVviDp1cnTKef8XRSpKBwEixd4lw5g+D1GnuLyszKHrtYF8Ti3WTgc62U+4zcvq8w0etPIFEP2dPZXrPDFSz3b+GTGK8="
   on:
     branch: master
     node: "6"
+  api_key:
+    secure: TwzlQobNk7BHW7ECkK0MbIMHI1sAS4BhZEKWFAS6XB8Ig/s8SlWjpqEVWPjv8I1VsL4Pv5c02OTvKTrKgA0nMKUcx4CCw2rF7+7SFCQoiTfhwk2GLo4y0cXxldCLvbO1HnEYMs/YFVVmqBTMuffAizwL726BYaaH7l1aa3miF6w=
+  email:
+    secure: jbuTd1xf/BG3i6e3NvTEMr+Hm9qntfSMS6AJF+nBbeigmKQRZqiaG7hC5vdn9NQ/Fz7b+5086MEdxJ6/FImPzF7GF6qLxtRTun0GeaDs6q75mnpFukNJq9/3eayh8hNHjhiiKiu4eg8v1VBA6v7hZ4hZMY0PXPc9hyOksfzTQAk=
+
+addons:
+  code_climate:
+    repo_token: 9fa850087ebd65087f3754648c7d55647685cf583fa55b27474bcc76695c1e56
